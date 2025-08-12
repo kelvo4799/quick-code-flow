@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register - SMS Verify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222 84% 4%)',
+                        foreground: 'hsl(210 40% 98%)',
+                        card: 'hsl(222 84% 4%)',
+                        'card-foreground': 'hsl(210 40% 98%)',
+                        popover: 'hsl(222 84% 4%)',
+                        'popover-foreground': 'hsl(210 40% 98%)',
+                        primary: 'hsl(221 83% 53%)',
+                        'primary-foreground': 'hsl(210 40% 98%)',
+                        secondary: 'hsl(217 32% 17%)',
+                        'secondary-foreground': 'hsl(210 40% 98%)',
+                        muted: 'hsl(217 32% 17%)',
+                        'muted-foreground': 'hsl(215 20% 65%)',
+                        accent: 'hsl(262 83% 58%)',
+                        'accent-foreground': 'hsl(210 40% 98%)',
+                        destructive: 'hsl(0 62% 30%)',
+                        'destructive-foreground': 'hsl(210 40% 98%)',
+                        border: 'hsl(217 32% 17%)',
+                        input: 'hsl(217 32% 17%)',
+                        ring: 'hsl(224 71% 4%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%))',
+                        'gradient-secondary': 'linear-gradient(135deg, hsl(222 84% 4%), hsl(217 32% 17%))',
+                        'gradient-accent': 'linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%))'
+                    },
+                    boxShadow: {
+                        'glow-primary': '0 0 40px hsl(221 83% 53% / 0.3)',
+                        'glow-accent': '0 0 40px hsl(262 83% 58% / 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-background to-secondary text-foreground">
+    <!-- Navigation -->
+    <nav class="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <i data-lucide="shield-check" class="h-5 w-5 text-white"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    SMS Verify
+                </span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="text-muted-foreground hover:text-foreground transition-colors">
+                    Sign In
+                </a>
+                <a href="register.html" class="bg-gradient-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Register Form -->
+    <div class="container mx-auto px-4 py-16 flex items-center justify-center">
+        <div class="w-full max-w-md bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg shadow-glow-primary">
+            <div class="text-center p-6 pb-0">
+                <h1 class="text-2xl font-bold">Create Account</h1>
+                <p class="text-muted-foreground mt-2">
+                    Start securing your applications with SMS verification
+                </p>
+            </div>
+            
+            <form id="registerForm" class="p-6">
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="name" class="text-sm font-medium text-foreground">Full Name</label>
+                        <div class="relative">
+                            <i data-lucide="user" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="name"
+                                type="text"
+                                placeholder="Enter your full name"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="email" class="text-sm font-medium text-foreground">Email</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="Enter your email"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="password" class="text-sm font-medium text-foreground">Password</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="Create a password"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <i data-lucide="eye" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="confirmPassword" class="text-sm font-medium text-foreground">Confirm Password</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="confirmPassword"
+                                type="password"
+                                placeholder="Confirm your password"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                            <button
+                                type="button"
+                                id="toggleConfirmPassword"
+                                class="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <i data-lucide="eye" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center space-x-2">
+                        <input
+                            type="checkbox"
+                            id="terms"
+                            class="h-4 w-4 rounded border border-input bg-background"
+                            required
+                        />
+                        <label for="terms" class="text-sm text-muted-foreground">
+                            I agree to the 
+                            <a href="#" class="text-primary hover:text-primary/80 transition-colors">Terms of Service</a> 
+                            and 
+                            <a href="#" class="text-primary hover:text-primary/80 transition-colors">Privacy Policy</a>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col space-y-4 mt-6">
+                    <button 
+                        type="submit" 
+                        id="submitButton"
+                        class="w-full bg-gradient-primary text-white h-10 px-4 py-2 rounded-md hover:opacity-90 transition-opacity shadow-glow-primary disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled
+                    >
+                        Create Account
+                    </button>
+                    
+                    <p class="text-center text-sm text-muted-foreground">
+                        Already have an account? 
+                        <a href="login.html" class="text-primary hover:text-primary/80 transition-colors">
+                            Sign in here
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Password visibility toggles
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+        const togglePasswordButton = document.getElementById('togglePassword');
+        const toggleConfirmPasswordButton = document.getElementById('toggleConfirmPassword');
+        const termsCheckbox = document.getElementById('terms');
+        const submitButton = document.getElementById('submitButton');
+
+        let showPassword = false;
+        let showConfirmPassword = false;
+
+        togglePasswordButton.addEventListener('click', () => {
+            showPassword = !showPassword;
+            passwordInput.type = showPassword ? 'text' : 'password';
+            
+            const icon = togglePasswordButton.querySelector('i');
+            icon.setAttribute('data-lucide', showPassword ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        toggleConfirmPasswordButton.addEventListener('click', () => {
+            showConfirmPassword = !showConfirmPassword;
+            confirmPasswordInput.type = showConfirmPassword ? 'text' : 'password';
+            
+            const icon = toggleConfirmPasswordButton.querySelector('i');
+            icon.setAttribute('data-lucide', showConfirmPassword ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        // Enable/disable submit button based on terms checkbox
+        termsCheckbox.addEventListener('change', () => {
+            submitButton.disabled = !termsCheckbox.checked;
+        });
+
+        // Form submission
+        const registerForm = document.getElementById('registerForm');
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('name').value,
+                email: document.getElementById('email').value,
+                password: document.getElementById('password').value,
+                confirmPassword: document.getElementById('confirmPassword').value,
+                agreeToTerms: document.getElementById('terms').checked
+            };
+            
+            console.log('Registration attempt:', formData);
+            // Handle registration logic here
+        });
+    </script>
+</body>
+</html>

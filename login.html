@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - SMS Verify</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222 84% 4%)',
+                        foreground: 'hsl(210 40% 98%)',
+                        card: 'hsl(222 84% 4%)',
+                        'card-foreground': 'hsl(210 40% 98%)',
+                        popover: 'hsl(222 84% 4%)',
+                        'popover-foreground': 'hsl(210 40% 98%)',
+                        primary: 'hsl(221 83% 53%)',
+                        'primary-foreground': 'hsl(210 40% 98%)',
+                        secondary: 'hsl(217 32% 17%)',
+                        'secondary-foreground': 'hsl(210 40% 98%)',
+                        muted: 'hsl(217 32% 17%)',
+                        'muted-foreground': 'hsl(215 20% 65%)',
+                        accent: 'hsl(262 83% 58%)',
+                        'accent-foreground': 'hsl(210 40% 98%)',
+                        destructive: 'hsl(0 62% 30%)',
+                        'destructive-foreground': 'hsl(210 40% 98%)',
+                        border: 'hsl(217 32% 17%)',
+                        input: 'hsl(217 32% 17%)',
+                        ring: 'hsl(224 71% 4%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%))',
+                        'gradient-secondary': 'linear-gradient(135deg, hsl(222 84% 4%), hsl(217 32% 17%))',
+                        'gradient-accent': 'linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%))'
+                    },
+                    boxShadow: {
+                        'glow-primary': '0 0 40px hsl(221 83% 53% / 0.3)',
+                        'glow-accent': '0 0 40px hsl(262 83% 58% / 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-background to-secondary text-foreground">
+    <!-- Navigation -->
+    <nav class="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <i data-lucide="shield-check" class="h-5 w-5 text-white"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    SMS Verify
+                </span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="text-muted-foreground hover:text-foreground transition-colors">
+                    Sign In
+                </a>
+                <a href="register.html" class="bg-gradient-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Login Form -->
+    <div class="container mx-auto px-4 py-16 flex items-center justify-center">
+        <div class="w-full max-w-md bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg shadow-glow-primary">
+            <div class="text-center p-6 pb-0">
+                <h1 class="text-2xl font-bold">Welcome Back</h1>
+                <p class="text-muted-foreground mt-2">
+                    Sign in to your SMS verification dashboard
+                </p>
+            </div>
+            
+            <form id="loginForm" class="p-6">
+                <div class="space-y-4">
+                    <div class="space-y-2">
+                        <label for="email" class="text-sm font-medium text-foreground">Email</label>
+                        <div class="relative">
+                            <i data-lucide="mail" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="email"
+                                type="email"
+                                placeholder="Enter your email"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <label for="password" class="text-sm font-medium text-foreground">Password</label>
+                        <div class="relative">
+                            <i data-lucide="lock" class="absolute left-3 top-3 h-4 w-4 text-muted-foreground"></i>
+                            <input
+                                id="password"
+                                type="password"
+                                placeholder="Enter your password"
+                                class="flex h-10 w-full rounded-md border border-input bg-background/50 pl-10 pr-10 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                                required
+                            />
+                            <button
+                                type="button"
+                                id="togglePassword"
+                                class="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                            >
+                                <i data-lucide="eye" class="h-4 w-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="text-right">
+                        <a href="reset-password.html" class="text-sm text-primary hover:text-primary/80 transition-colors">
+                            Forgot your password?
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="flex flex-col space-y-4 mt-6">
+                    <button 
+                        type="submit" 
+                        class="w-full bg-gradient-primary text-white h-10 px-4 py-2 rounded-md hover:opacity-90 transition-opacity shadow-glow-primary"
+                    >
+                        Sign In
+                    </button>
+                    
+                    <p class="text-center text-sm text-muted-foreground">
+                        Don't have an account? 
+                        <a href="register.html" class="text-primary hover:text-primary/80 transition-colors">
+                            Sign up for free
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+
+        // Password visibility toggle
+        const passwordInput = document.getElementById('password');
+        const toggleButton = document.getElementById('togglePassword');
+        let showPassword = false;
+
+        toggleButton.addEventListener('click', () => {
+            showPassword = !showPassword;
+            passwordInput.type = showPassword ? 'text' : 'password';
+            
+            // Update icon
+            const icon = toggleButton.querySelector('i');
+            icon.setAttribute('data-lucide', showPassword ? 'eye-off' : 'eye');
+            lucide.createIcons();
+        });
+
+        // Form submission
+        const loginForm = document.getElementById('loginForm');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            console.log('Login attempt:', { email, password });
+            // Handle login logic here
+        });
+    </script>
+</body>
+</html>

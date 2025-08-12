@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMS Verify - Secure SMS Verification Service</title>
+    <meta name="description" content="Secure your applications with fast, reliable SMS verification codes. Simple API, global reach, enterprise security.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222 84% 4%)',
+                        foreground: 'hsl(210 40% 98%)',
+                        card: 'hsl(222 84% 4%)',
+                        'card-foreground': 'hsl(210 40% 98%)',
+                        popover: 'hsl(222 84% 4%)',
+                        'popover-foreground': 'hsl(210 40% 98%)',
+                        primary: 'hsl(221 83% 53%)',
+                        'primary-foreground': 'hsl(210 40% 98%)',
+                        secondary: 'hsl(217 32% 17%)',
+                        'secondary-foreground': 'hsl(210 40% 98%)',
+                        muted: 'hsl(217 32% 17%)',
+                        'muted-foreground': 'hsl(215 20% 65%)',
+                        accent: 'hsl(262 83% 58%)',
+                        'accent-foreground': 'hsl(210 40% 98%)',
+                        destructive: 'hsl(0 62% 30%)',
+                        'destructive-foreground': 'hsl(210 40% 98%)',
+                        border: 'hsl(217 32% 17%)',
+                        input: 'hsl(217 32% 17%)',
+                        ring: 'hsl(224 71% 4%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%))',
+                        'gradient-secondary': 'linear-gradient(135deg, hsl(222 84% 4%), hsl(217 32% 17%))',
+                        'gradient-accent': 'linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%))'
+                    },
+                    boxShadow: {
+                        'glow-primary': '0 0 40px hsl(221 83% 53% / 0.3)',
+                        'glow-accent': '0 0 40px hsl(262 83% 58% / 0.4)'
+                    },
+                    animation: {
+                        'glow-pulse': 'glow-pulse 2s ease-in-out infinite alternate'
+                    },
+                    keyframes: {
+                        'glow-pulse': {
+                            '0%': { boxShadow: '0 0 20px hsl(221 83% 53% / 0.3)' },
+                            '100%': { boxShadow: '0 0 30px hsl(221 83% 53% / 0.5)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-background to-secondary text-foreground">
+    <!-- Navigation -->
+    <nav class="border-b border-border/50 bg-background/80 backdrop-blur-sm">
+        <div class="container mx-auto px-4 py-4 flex items-center justify-between">
+            <div class="flex items-center space-x-2">
+                <div class="w-8 h-8 bg-gradient-primary rounded-lg flex items-center justify-center">
+                    <i data-lucide="shield-check" class="h-5 w-5 text-white"></i>
+                </div>
+                <span class="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+                    SMS Verify
+                </span>
+            </div>
+            
+            <div class="flex items-center space-x-4">
+                <a href="login.html" class="text-muted-foreground hover:text-foreground transition-colors">
+                    Sign In
+                </a>
+                <a href="register.html" class="bg-gradient-primary text-white px-4 py-2 rounded-md hover:opacity-90 transition-opacity">
+                    Get Started
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="container mx-auto px-4 py-20 text-center">
+        <div class="max-w-4xl mx-auto">
+            <div class="mb-8">
+                <div class="inline-flex items-center bg-gradient-primary/10 border border-primary/20 rounded-full px-4 py-2 mb-6">
+                    <i data-lucide="message-square" class="h-4 w-4 mr-2 text-primary"></i>
+                    <span class="text-sm font-medium text-primary">Trusted by 10,000+ developers</span>
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-bold mb-6 leading-tight">
+                    <span class="bg-gradient-primary bg-clip-text text-transparent">
+                        SMS Verification
+                    </span>
+                    <br />
+                    Made Simple
+                </h1>
+                
+                <p class="text-xl text-muted-foreground max-w-2xl mx-auto mb-8">
+                    Secure your applications with fast, reliable SMS verification codes. 
+                    Simple API, global reach, enterprise security.
+                </p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+                <a href="register.html" class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium text-white bg-gradient-primary rounded-md hover:opacity-90 transition-opacity shadow-glow-primary animate-glow-pulse">
+                    Get Started Free
+                    <i data-lucide="arrow-right" class="ml-2 h-4 w-4"></i>
+                </a>
+                
+                <button class="px-6 py-3 text-lg font-medium border border-border/50 bg-background/50 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
+                    View Documentation
+                </button>
+            </div>
+            
+            <div class="relative">
+                <div class="bg-gradient-primary/20 rounded-2xl p-8 border border-primary/20 backdrop-blur-sm">
+                    <div class="bg-background/90 rounded-lg p-6 font-mono text-left">
+                        <div class="text-sm text-muted-foreground mb-2">// Send verification code</div>
+                        <div class="text-foreground">
+                            <span class="text-blue-400">await</span>
+                            <span class="text-green-400"> smsVerify</span><span class="text-yellow-400">.send</span><span class="text-foreground">({phone: </span><span class="text-orange-400">"+1234567890"</span><span class="text-foreground">});</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold mb-4">
+                Why Choose <span class="bg-gradient-primary bg-clip-text text-transparent">SMSVerify</span>?
+            </h2>
+            <p class="text-xl text-muted-foreground max-w-2xl mx-auto">
+                Everything you need to implement secure SMS verification in your applications
+            </p>
+        </div>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16">
+            <div class="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-6 hover:shadow-glow-accent transition-all duration-300">
+                <div class="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-white mb-4">
+                    <i data-lucide="zap" class="h-6 w-6"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Lightning Fast</h3>
+                <p class="text-muted-foreground">Send SMS verification codes in under 1 second worldwide</p>
+            </div>
+            
+            <div class="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-6 hover:shadow-glow-accent transition-all duration-300">
+                <div class="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-white mb-4">
+                    <i data-lucide="lock" class="h-6 w-6"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Secure & Reliable</h3>
+                <p class="text-muted-foreground">Enterprise-grade security with 99.9% delivery guarantee</p>
+            </div>
+            
+            <div class="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-6 hover:shadow-glow-accent transition-all duration-300">
+                <div class="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-white mb-4">
+                    <i data-lucide="bar-chart-3" class="h-6 w-6"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Analytics Dashboard</h3>
+                <p class="text-muted-foreground">Track delivery rates, conversion metrics, and user engagement</p>
+            </div>
+            
+            <div class="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-6 hover:shadow-glow-accent transition-all duration-300">
+                <div class="w-12 h-12 bg-gradient-primary rounded-lg flex items-center justify-center text-white mb-4">
+                    <i data-lucide="users" class="h-6 w-6"></i>
+                </div>
+                <h3 class="text-lg font-semibold mb-2">Global Coverage</h3>
+                <p class="text-muted-foreground">Reach users in 200+ countries with local number support</p>
+            </div>
+        </div>
+        
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+            <div>
+                <h3 class="text-2xl font-bold mb-6">Everything You Need</h3>
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">Easy API integration in minutes</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">Competitive pricing starting at $0.01/SMS</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">24/7 technical support</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">Custom sender IDs available</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">Fraud detection & prevention</span>
+                    </div>
+                    <div class="flex items-center space-x-3">
+                        <i data-lucide="check-circle" class="h-5 w-5 text-green-400 flex-shrink-0"></i>
+                        <span class="text-muted-foreground">Developer-friendly documentation</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-card/80 backdrop-blur-sm border border-border/50 rounded-lg p-8">
+                <div class="text-center">
+                    <i data-lucide="shield" class="h-16 w-16 mx-auto mb-4 text-primary"></i>
+                    <h4 class="text-xl font-bold mb-2">Enterprise Ready</h4>
+                    <p class="text-muted-foreground mb-6">
+                        SOC 2 compliant, GDPR ready, with enterprise SLAs and dedicated support.
+                    </p>
+                    <button class="w-full border border-border bg-transparent px-4 py-2 rounded-md hover:bg-accent hover:text-accent-foreground transition-colors">
+                        Contact Sales
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="container mx-auto px-4 py-16">
+        <div class="bg-gradient-primary/10 border border-primary/20 backdrop-blur-sm rounded-lg">
+            <div class="text-center py-16 px-6">
+                <h3 class="text-3xl font-bold mb-4">Ready to Get Started?</h3>
+                <p class="text-xl text-muted-foreground mb-8 max-w-2xl mx-auto">
+                    Join thousands of developers who trust SMSVerify for their authentication needs.
+                    Start with 100 free SMS credits.
+                </p>
+                <a href="register.html" class="inline-flex items-center justify-center px-6 py-3 text-lg font-medium text-white bg-gradient-primary rounded-md hover:opacity-90 transition-opacity shadow-glow-primary">
+                    Start Free Trial
+                    <i data-lucide="arrow-right" class="ml-2 h-4 w-4"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+    </script>
+</body>
+</html>

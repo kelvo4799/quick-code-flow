@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: 'hsl(222 84% 4%)',
+                        foreground: 'hsl(210 40% 98%)',
+                        card: 'hsl(222 84% 4%)',
+                        'card-foreground': 'hsl(210 40% 98%)',
+                        popover: 'hsl(222 84% 4%)',
+                        'popover-foreground': 'hsl(210 40% 98%)',
+                        primary: 'hsl(221 83% 53%)',
+                        'primary-foreground': 'hsl(210 40% 98%)',
+                        secondary: 'hsl(217 32% 17%)',
+                        'secondary-foreground': 'hsl(210 40% 98%)',
+                        muted: 'hsl(217 32% 17%)',
+                        'muted-foreground': 'hsl(215 20% 65%)',
+                        accent: 'hsl(262 83% 58%)',
+                        'accent-foreground': 'hsl(210 40% 98%)',
+                        destructive: 'hsl(0 62% 30%)',
+                        'destructive-foreground': 'hsl(210 40% 98%)',
+                        border: 'hsl(217 32% 17%)',
+                        input: 'hsl(217 32% 17%)',
+                        ring: 'hsl(224 71% 4%)'
+                    },
+                    backgroundImage: {
+                        'gradient-primary': 'linear-gradient(135deg, hsl(221 83% 53%), hsl(262 83% 58%))',
+                        'gradient-secondary': 'linear-gradient(135deg, hsl(222 84% 4%), hsl(217 32% 17%))',
+                        'gradient-accent': 'linear-gradient(135deg, hsl(262 83% 58%), hsl(221 83% 53%))'
+                    },
+                    boxShadow: {
+                        'glow-primary': '0 0 40px hsl(221 83% 53% / 0.3)',
+                        'glow-accent': '0 0 40px hsl(262 83% 58% / 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-background to-secondary text-foreground">
+    <div class="min-h-screen flex items-center justify-center">
+        <div class="text-center max-w-md mx-auto px-4">
+            <div class="mb-8">
+                <div class="w-24 h-24 mx-auto mb-6 bg-gradient-primary rounded-full flex items-center justify-center shadow-glow-primary">
+                    <i data-lucide="search-x" class="h-12 w-12 text-white"></i>
+                </div>
+                <h1 class="text-6xl font-bold mb-4 bg-gradient-primary bg-clip-text text-transparent">404</h1>
+                <h2 class="text-2xl font-semibold mb-2">Oops! Page not found</h2>
+                <p class="text-muted-foreground mb-8">
+                    The page you're looking for doesn't exist or has been moved to a different location.
+                </p>
+            </div>
+            
+            <div class="space-y-4">
+                <a 
+                    href="index.html" 
+                    class="inline-flex items-center justify-center w-full px-6 py-3 text-lg font-medium text-white bg-gradient-primary rounded-md hover:opacity-90 transition-opacity shadow-glow-primary"
+                >
+                    <i data-lucide="home" class="mr-2 h-5 w-5"></i>
+                    Return to Home
+                </a>
+                
+                <button 
+                    onclick="history.back()" 
+                    class="inline-flex items-center justify-center w-full px-6 py-3 text-lg font-medium border border-border bg-transparent rounded-md hover:bg-accent hover:text-accent-foreground transition-colors"
+                >
+                    <i data-lucide="arrow-left" class="mr-2 h-5 w-5"></i>
+                    Go Back
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize Lucide icons
+        lucide.createIcons();
+        
+        // Log 404 error (for debugging purposes)
+        console.error('404 Error: User attempted to access non-existent route:', window.location.pathname);
+    </script>
+</body>
+</html>
