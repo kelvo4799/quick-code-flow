@@ -1,29 +1,79 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
-import { Eye, EyeOff, Mail, Lock, Github } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Github, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { authApi } from "@/lib/api";
+import { loginSchema, type LoginFormData } from "@/lib/validationSchemas";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Login attempt:", { email, password });
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = async (data: LoginFormData) => {
+    setIsLoading(true);
+    setApiError("");
+
+    try {
+      const response = await authApi.login({
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response.success) {
+        toast.success("Login successful!", {
+          description: "Redirecting to dashboard...",
+        });
+        
+        // Store token if needed
+        if (response.data?.token) {
+          localStorage.setItem("authToken", response.data.token);
+        }
+        
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      } else {
+        setApiError(response.error || "Login failed. Please try again.");
+        toast.error("Login failed", {
+          description: response.error || "Invalid credentials",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setApiError(errorMessage);
+      toast.error("Error", {
+        description: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleLogin = () => {
-    console.log("Google login");
+    authApi.socialLogin('google');
   };
 
   const handleGithubLogin = () => {
-    console.log("Github login");
+    authApi.socialLogin('github');
   };
 
   return (
@@ -39,8 +89,15 @@ const Login = () => {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
+              {apiError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{apiError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email</Label>
                 <div className="relative">
@@ -49,12 +106,13 @@ const Login = () => {
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("email")}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -65,10 +123,8 @@ const Login = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Enter your password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
                     className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -78,6 +134,9 @@ const Login = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
               </div>
               
               <div className="text-right">
@@ -94,8 +153,16 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow-primary"
+                disabled={isLoading}
               >
-                Sign In
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  "Sign In"
+                )}
               </Button>
 
               <div className="relative">

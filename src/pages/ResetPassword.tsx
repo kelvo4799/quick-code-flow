@@ -1,21 +1,69 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
-import { Mail, ArrowLeft, CheckCircle } from "lucide-react";
+import { Mail, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { authApi } from "@/lib/api";
+import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validationSchemas";
 
 const ResetPassword = () => {
-  const [email, setEmail] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [submittedEmail, setSubmittedEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Handle password reset logic here
-    console.log("Password reset request:", { email });
-    setIsSubmitted(true);
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<ResetPasswordFormData>({
+    resolver: zodResolver(resetPasswordSchema),
+  });
+
+  const onSubmit = async (data: ResetPasswordFormData) => {
+    setIsLoading(true);
+    setApiError("");
+
+    try {
+      const response = await authApi.resetPassword({
+        email: data.email,
+      });
+
+      if (response.success) {
+        setSubmittedEmail(data.email);
+        setIsSubmitted(true);
+        toast.success("Email sent!", {
+          description: "Check your inbox for password reset instructions.",
+        });
+      } else {
+        setApiError(response.error || "Failed to send reset email. Please try again.");
+        toast.error("Error", {
+          description: response.error || "Unable to process request",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setApiError(errorMessage);
+      toast.error("Error", {
+        description: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleTryAgain = () => {
+    setIsSubmitted(false);
+    setApiError("");
+    reset();
   };
 
   if (isSubmitted) {
@@ -31,7 +79,7 @@ const ResetPassword = () => {
               </div>
               <CardTitle className="text-2xl font-bold">Check Your Email</CardTitle>
               <CardDescription className="text-muted-foreground">
-                We've sent password reset instructions to <strong>{email}</strong>
+                We've sent password reset instructions to <strong>{submittedEmail}</strong>
               </CardDescription>
             </CardHeader>
             
@@ -43,7 +91,7 @@ const ResetPassword = () => {
             
             <CardFooter className="flex flex-col space-y-4">
               <Button 
-                onClick={() => setIsSubmitted(false)}
+                onClick={handleTryAgain}
                 variant="outline" 
                 className="w-full"
               >
@@ -77,8 +125,15 @@ const ResetPassword = () => {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
+              {apiError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{apiError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email Address</Label>
                 <div className="relative">
@@ -87,12 +142,13 @@ const ResetPassword = () => {
                     id="email"
                     type="email"
                     placeholder="Enter your email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
                     className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("email")}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
             </CardContent>
             
@@ -100,8 +156,16 @@ const ResetPassword = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow-primary"
+                disabled={isLoading}
               >
-                Send Reset Instructions
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  "Send Reset Instructions"
+                )}
               </Button>
               
               <Link 

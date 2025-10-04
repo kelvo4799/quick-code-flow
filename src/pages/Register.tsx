@@ -1,40 +1,89 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
-import { Eye, EyeOff, Mail, Lock, User, Github } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Github, AlertCircle, Loader2 } from "lucide-react";
+import { toast } from "sonner";
+import { authApi } from "@/lib/api";
+import { registerSchema, type RegisterFormData } from "@/lib/validationSchemas";
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    agreeToTerms: false
+  const [isLoading, setIsLoading] = useState(false);
+  const [apiError, setApiError] = useState<string>("");
+  const navigate = useNavigate();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm<RegisterFormData>({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      agreeToTerms: false,
+    },
   });
 
-  const handleInputChange = (field: string, value: string | boolean) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-  };
+  const agreeToTerms = watch("agreeToTerms");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Registration attempt:", formData);
+  const onSubmit = async (data: RegisterFormData) => {
+    setIsLoading(true);
+    setApiError("");
+
+    try {
+      const response = await authApi.register({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      });
+
+      if (response.success) {
+        toast.success("Registration successful!", {
+          description: "Welcome! Redirecting to dashboard...",
+        });
+        
+        // Store token if needed
+        if (response.data?.token) {
+          localStorage.setItem("authToken", response.data.token);
+        }
+        
+        setTimeout(() => {
+          navigate("/dashboard");
+        }, 1000);
+      } else {
+        setApiError(response.error || "Registration failed. Please try again.");
+        toast.error("Registration failed", {
+          description: response.error || "Unable to create account",
+        });
+      }
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred";
+      setApiError(errorMessage);
+      toast.error("Error", {
+        description: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoogleSignup = () => {
-    console.log("Google signup");
+    authApi.socialLogin('google');
   };
 
   const handleGithubSignup = () => {
-    console.log("Github signup");
+    authApi.socialLogin('github');
   };
 
   return (
@@ -50,8 +99,15 @@ const Register = () => {
             </CardDescription>
           </CardHeader>
           
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <CardContent className="space-y-4">
+              {apiError && (
+                <Alert variant="destructive">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{apiError}</AlertDescription>
+                </Alert>
+              )}
+
               <div className="space-y-2">
                 <Label htmlFor="name" className="text-foreground">Full Name</Label>
                 <div className="relative">
@@ -60,12 +116,13 @@ const Register = () => {
                     id="name"
                     type="text"
                     placeholder="Enter your full name"
-                    value={formData.name}
-                    onChange={(e) => handleInputChange("name", e.target.value)}
                     className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("name")}
                   />
                 </div>
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -76,12 +133,13 @@ const Register = () => {
                     id="email"
                     type="email"
                     placeholder="Enter your email"
-                    value={formData.email}
-                    onChange={(e) => handleInputChange("email", e.target.value)}
                     className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("email")}
                   />
                 </div>
+                {errors.email && (
+                  <p className="text-sm text-destructive">{errors.email.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -92,10 +150,8 @@ const Register = () => {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder="Create a password"
-                    value={formData.password}
-                    onChange={(e) => handleInputChange("password", e.target.value)}
                     className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("password")}
                   />
                   <button
                     type="button"
@@ -105,6 +161,9 @@ const Register = () => {
                     {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.password && (
+                  <p className="text-sm text-destructive">{errors.password.message}</p>
+                )}
               </div>
               
               <div className="space-y-2">
@@ -115,10 +174,8 @@ const Register = () => {
                     id="confirmPassword"
                     type={showConfirmPassword ? "text" : "password"}
                     placeholder="Confirm your password"
-                    value={formData.confirmPassword}
-                    onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                     className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    required
+                    {...register("confirmPassword")}
                   />
                   <button
                     type="button"
@@ -128,24 +185,32 @@ const Register = () => {
                     {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                )}
               </div>
               
-              <div className="flex items-center space-x-2">
-                <Checkbox
-                  id="terms"
-                  checked={formData.agreeToTerms}
-                  onCheckedChange={(checked) => handleInputChange("agreeToTerms", checked)}
-                />
-                <Label htmlFor="terms" className="text-sm text-muted-foreground">
-                  I agree to the{" "}
-                  <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors">
-                    Terms of Service
-                  </Link>{" "}
-                  and{" "}
-                  <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors">
-                    Privacy Policy
-                  </Link>
-                </Label>
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={agreeToTerms}
+                    onCheckedChange={(checked) => setValue("agreeToTerms", checked as boolean)}
+                  />
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                    I agree to the{" "}
+                    <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                {errors.agreeToTerms && (
+                  <p className="text-sm text-destructive">{errors.agreeToTerms.message}</p>
+                )}
               </div>
             </CardContent>
             
@@ -153,9 +218,16 @@ const Register = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-gradient-primary hover:opacity-90 transition-opacity shadow-glow-primary"
-                disabled={!formData.agreeToTerms}
+                disabled={isLoading}
               >
-                Create Account
+                {isLoading ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Creating account...
+                  </>
+                ) : (
+                  "Create Account"
+                )}
               </Button>
 
               <div className="relative">
