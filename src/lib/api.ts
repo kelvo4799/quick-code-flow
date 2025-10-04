@@ -1,5 +1,14 @@
 // API Configuration and Service Layer
+import axios, { AxiosError } from 'axios';
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://api.example.com';
+
+const apiClient = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
 
 export interface ApiResponse<T = any> {
   success: boolean;
@@ -23,42 +32,27 @@ export interface ResetPasswordRequest {
   email: string;
 }
 
-class ApiError extends Error {
-  constructor(public status: number, message: string) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
-
 async function fetchApi<T>(
   endpoint: string,
-  options: RequestInit = {}
+  options: { method?: string; data?: any } = {}
 ): Promise<ApiResponse<T>> {
   try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
+    const response = await apiClient.request<any>({
+      url: endpoint,
+      method: options.method || 'GET',
+      data: options.data,
     });
-
-    const data = await response.json();
-
-    if (!response.ok) {
-      throw new ApiError(response.status, data.message || data.error || 'An error occurred');
-    }
 
     return {
       success: true,
-      data: data.data || data,
-      message: data.message,
+      data: response.data.data || response.data,
+      message: response.data.message,
     };
   } catch (error) {
-    if (error instanceof ApiError) {
+    if (error instanceof AxiosError) {
       return {
         success: false,
-        error: error.message,
+        error: error.response?.data?.message || error.response?.data?.error || error.message || 'An error occurred',
       };
     }
     
@@ -73,21 +67,21 @@ export const authApi = {
   login: async (credentials: LoginRequest) => {
     return fetchApi<{ token: string; user: any }>('/auth/login', {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      data: credentials,
     });
   },
 
   register: async (userData: RegisterRequest) => {
     return fetchApi<{ token: string; user: any }>('/auth/register', {
       method: 'POST',
-      body: JSON.stringify(userData),
+      data: userData,
     });
   },
 
   resetPassword: async (data: ResetPasswordRequest) => {
     return fetchApi<{ message: string }>('/auth/reset-password', {
       method: 'POST',
-      body: JSON.stringify(data),
+      data: data,
     });
   },
 
