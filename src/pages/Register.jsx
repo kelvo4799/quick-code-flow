@@ -6,41 +6,51 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
-import { Eye, EyeOff, Mail, Lock, Github, AlertCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, User, Github, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
-import { loginSchema, type LoginFormData } from "@/lib/validationSchemas";
+import { registerSchema } from "@/lib/validationSchemas";
 
-const Login = () => {
+const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormData>({
-    resolver: zodResolver(loginSchema),
+    watch,
+    setValue,
+  } = useForm({
+    resolver: zodResolver(registerSchema),
+    defaultValues: {
+      agreeToTerms: false,
+    },
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const agreeToTerms = watch("agreeToTerms");
+
+  const onSubmit = async (data) => {
     setIsLoading(true);
     setApiError("");
 
     try {
-      const response = await authApi.login({
+      const response = await authApi.register({
+        name: data.name,
         email: data.email,
         password: data.password,
       });
 
       if (response.success) {
-        toast.success("Login successful!", {
-          description: "Redirecting to dashboard...",
+        toast.success("Registration successful!", {
+          description: "Welcome! Redirecting to dashboard...",
         });
         
         // Store token if needed
@@ -52,9 +62,9 @@ const Login = () => {
           navigate("/dashboard");
         }, 1000);
       } else {
-        setApiError(response.error || "Login failed. Please try again.");
-        toast.error("Login failed", {
-          description: response.error || "Invalid credentials",
+        setApiError(response.error || "Registration failed. Please try again.");
+        toast.error("Registration failed", {
+          description: response.error || "Unable to create account",
         });
       }
     } catch (error) {
@@ -68,11 +78,11 @@ const Login = () => {
     }
   };
 
-  const handleGoogleLogin = () => {
+  const handleGoogleSignup = () => {
     authApi.socialLogin('google');
   };
 
-  const handleGithubLogin = () => {
+  const handleGithubSignup = () => {
     authApi.socialLogin('github');
   };
 
@@ -83,9 +93,9 @@ const Login = () => {
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/50 shadow-glow-primary">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
+            <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Sign in to your SMS verification dashboard
+              Start securing your applications with SMS verification
             </CardDescription>
           </CardHeader>
           
@@ -98,6 +108,23 @@ const Login = () => {
                 </Alert>
               )}
 
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-foreground">Full Name</Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="name"
+                    type="text"
+                    placeholder="Enter your full name"
+                    className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
+                    {...register("name")}
+                  />
+                </div>
+                {errors.name && (
+                  <p className="text-sm text-destructive">{errors.name.message}</p>
+                )}
+              </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email</Label>
                 <div className="relative">
@@ -122,7 +149,7 @@ const Login = () => {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Enter your password"
+                    placeholder="Create a password"
                     className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
                     {...register("password")}
                   />
@@ -139,13 +166,51 @@ const Login = () => {
                 )}
               </div>
               
-              <div className="text-right">
-                <Link 
-                  to="/reset-password" 
-                  className="text-sm text-primary hover:text-primary/80 transition-colors"
-                >
-                  Forgot your password?
-                </Link>
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    id="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Confirm your password"
+                    className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
+                    {...register("confirmPassword")}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+                {errors.confirmPassword && (
+                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+                )}
+              </div>
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  <Checkbox
+                    id="terms"
+                    checked={agreeToTerms}
+                    onCheckedChange={(checked) => setValue("agreeToTerms", checked)}
+                  />
+                  <Label htmlFor="terms" className="text-sm text-muted-foreground">
+                    I agree to the{" "}
+                    <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors">
+                      Privacy Policy
+                    </Link>
+                  </Label>
+                </div>
+                {errors.agreeToTerms && (
+                  <p className="text-sm text-destructive">{errors.agreeToTerms.message}</p>
+                )}
               </div>
             </CardContent>
             
@@ -158,17 +223,17 @@ const Login = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    Creating account...
                   </>
                 ) : (
-                  "Sign In"
+                  "Create Account"
                 )}
               </Button>
 
               <div className="relative">
                 <Separator />
                 <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                  Or continue with
+                  Or sign up with
                 </span>
               </div>
 
@@ -176,7 +241,7 @@ const Login = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={handleGoogleLogin}
+                  onClick={handleGoogleSignup}
                   className="w-full"
                 >
                   <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -190,7 +255,7 @@ const Login = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={handleGithubLogin}
+                  onClick={handleGithubSignup}
                   className="w-full"
                 >
                   <Github className="h-5 w-5 mr-2" />
@@ -199,9 +264,9 @@ const Login = () => {
               </div>
               
               <p className="text-center text-sm text-muted-foreground">
-                Don't have an account?{" "}
-                <Link to="/register" className="text-primary hover:text-primary/80 transition-colors">
-                  Sign up for free
+                Already have an account?{" "}
+                <Link to="/login" className="text-primary hover:text-primary/80 transition-colors">
+                  Sign in here
                 </Link>
               </p>
             </CardFooter>
@@ -212,4 +277,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Register;

@@ -11,24 +11,24 @@ import Navigation from "@/components/Navigation";
 import { Mail, ArrowLeft, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
-import { resetPasswordSchema, type ResetPasswordFormData } from "@/lib/validationSchemas";
+import { resetPasswordSchema } from "@/lib/validationSchemas";
 
 const ResetPassword = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedEmail, setSubmittedEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [apiError, setApiError] = useState("");
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<ResetPasswordFormData>({
+  } = useForm({
     resolver: zodResolver(resetPasswordSchema),
   });
 
-  const onSubmit = async (data: ResetPasswordFormData) => {
+  const onSubmit = async (data) => {
     setIsLoading(true);
     setApiError("");
 

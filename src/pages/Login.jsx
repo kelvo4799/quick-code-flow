@@ -6,51 +6,41 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Separator } from "@/components/ui/separator";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import Navigation from "@/components/Navigation";
-import { Eye, EyeOff, Mail, Lock, User, Github, AlertCircle, Loader2 } from "lucide-react";
+import { Eye, EyeOff, Mail, Lock, Github, AlertCircle, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { authApi } from "@/lib/api";
-import { registerSchema, type RegisterFormData } from "@/lib/validationSchemas";
+import { loginSchema } from "@/lib/validationSchemas";
 
-const Register = () => {
+const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [apiError, setApiError] = useState<string>("");
+  const [apiError, setApiError] = useState("");
   const navigate = useNavigate();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-    watch,
-    setValue,
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: {
-      agreeToTerms: false,
-    },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
   });
 
-  const agreeToTerms = watch("agreeToTerms");
-
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data) => {
     setIsLoading(true);
     setApiError("");
 
     try {
-      const response = await authApi.register({
-        name: data.name,
+      const response = await authApi.login({
         email: data.email,
         password: data.password,
       });
 
       if (response.success) {
-        toast.success("Registration successful!", {
-          description: "Welcome! Redirecting to dashboard...",
+        toast.success("Login successful!", {
+          description: "Redirecting to dashboard...",
         });
         
         // Store token if needed
@@ -62,9 +52,9 @@ const Register = () => {
           navigate("/dashboard");
         }, 1000);
       } else {
-        setApiError(response.error || "Registration failed. Please try again.");
-        toast.error("Registration failed", {
-          description: response.error || "Unable to create account",
+        setApiError(response.error || "Login failed. Please try again.");
+        toast.error("Login failed", {
+          description: response.error || "Invalid credentials",
         });
       }
     } catch (error) {
@@ -78,11 +68,11 @@ const Register = () => {
     }
   };
 
-  const handleGoogleSignup = () => {
+  const handleGoogleLogin = () => {
     authApi.socialLogin('google');
   };
 
-  const handleGithubSignup = () => {
+  const handleGithubLogin = () => {
     authApi.socialLogin('github');
   };
 
@@ -93,9 +83,9 @@ const Register = () => {
       <div className="container mx-auto px-4 py-16 flex items-center justify-center">
         <Card className="w-full max-w-md bg-card/80 backdrop-blur-sm border-border/50 shadow-glow-primary">
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Create Account</CardTitle>
+            <CardTitle className="text-2xl font-bold">Welcome Back</CardTitle>
             <CardDescription className="text-muted-foreground">
-              Start securing your applications with SMS verification
+              Sign in to your SMS verification dashboard
             </CardDescription>
           </CardHeader>
           
@@ -108,23 +98,6 @@ const Register = () => {
                 </Alert>
               )}
 
-              <div className="space-y-2">
-                <Label htmlFor="name" className="text-foreground">Full Name</Label>
-                <div className="relative">
-                  <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="name"
-                    type="text"
-                    placeholder="Enter your full name"
-                    className="pl-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    {...register("name")}
-                  />
-                </div>
-                {errors.name && (
-                  <p className="text-sm text-destructive">{errors.name.message}</p>
-                )}
-              </div>
-              
               <div className="space-y-2">
                 <Label htmlFor="email" className="text-foreground">Email</Label>
                 <div className="relative">
@@ -149,7 +122,7 @@ const Register = () => {
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="Create a password"
+                    placeholder="Enter your password"
                     className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
                     {...register("password")}
                   />
@@ -166,51 +139,13 @@ const Register = () => {
                 )}
               </div>
               
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword" className="text-foreground">Confirm Password</Label>
-                <div className="relative">
-                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input
-                    id="confirmPassword"
-                    type={showConfirmPassword ? "text" : "password"}
-                    placeholder="Confirm your password"
-                    className="pl-10 pr-10 bg-background/50 border-border/50 focus:ring-2 focus:ring-ring/50"
-                    {...register("confirmPassword")}
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                  </button>
-                </div>
-                {errors.confirmPassword && (
-                  <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
-                )}
-              </div>
-              
-              <div className="space-y-2">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="terms"
-                    checked={agreeToTerms}
-                    onCheckedChange={(checked) => setValue("agreeToTerms", checked as boolean)}
-                  />
-                  <Label htmlFor="terms" className="text-sm text-muted-foreground">
-                    I agree to the{" "}
-                    <Link to="/terms" className="text-primary hover:text-primary/80 transition-colors">
-                      Terms of Service
-                    </Link>{" "}
-                    and{" "}
-                    <Link to="/privacy" className="text-primary hover:text-primary/80 transition-colors">
-                      Privacy Policy
-                    </Link>
-                  </Label>
-                </div>
-                {errors.agreeToTerms && (
-                  <p className="text-sm text-destructive">{errors.agreeToTerms.message}</p>
-                )}
+              <div className="text-right">
+                <Link 
+                  to="/reset-password" 
+                  className="text-sm text-primary hover:text-primary/80 transition-colors"
+                >
+                  Forgot your password?
+                </Link>
               </div>
             </CardContent>
             
@@ -223,17 +158,17 @@ const Register = () => {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
+                    Signing in...
                   </>
                 ) : (
-                  "Create Account"
+                  "Sign In"
                 )}
               </Button>
 
               <div className="relative">
                 <Separator />
                 <span className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-card px-2 text-xs text-muted-foreground">
-                  Or sign up with
+                  Or continue with
                 </span>
               </div>
 
@@ -241,7 +176,7 @@ const Register = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={handleGoogleSignup}
+                  onClick={handleGoogleLogin}
                   className="w-full"
                 >
                   <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -255,7 +190,7 @@ const Register = () => {
                 <Button 
                   type="button" 
                   variant="outline" 
-                  onClick={handleGithubSignup}
+                  onClick={handleGithubLogin}
                   className="w-full"
                 >
                   <Github className="h-5 w-5 mr-2" />
@@ -264,9 +199,9 @@ const Register = () => {
               </div>
               
               <p className="text-center text-sm text-muted-foreground">
-                Already have an account?{" "}
-                <Link to="/login" className="text-primary hover:text-primary/80 transition-colors">
-                  Sign in here
+                Don't have an account?{" "}
+                <Link to="/register" className="text-primary hover:text-primary/80 transition-colors">
+                  Sign up for free
                 </Link>
               </p>
             </CardFooter>
@@ -277,4 +212,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

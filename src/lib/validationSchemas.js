@@ -53,8 +53,3 @@ export const resetPasswordSchema = z.object({
     .email('Please enter a valid email address')
     .max(255, 'Email must be less than 255 characters'),
 });
-
-// These types will be the validated output with all fields required
-export type LoginFormData = z.output<typeof loginSchema>;
-export type RegisterFormData = z.output<typeof registerSchema>;
-export type ResetPasswordFormData = z.output<typeof resetPasswordSchema>;
